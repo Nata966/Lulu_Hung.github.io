@@ -1,579 +1,214 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex計畫 | 強尼車坊互動式戰略儀表板 (極黑版)</title>
+    <title>黑匡國際顧問｜視覺化互動原型</title>
+    <!-- Chosen Palette: Moat Builder's Palette (Deep Charcoal, Strategic Red, Ash White) -->
+    <!-- Application Structure Plan: A single-page, interactive prototype based on the final "Pain-Point Driven Moat Builder" blueprint. The structure is a highly empathetic conversion funnel: 1. Hero (Pain-point resonance); 2. Problem Gateway (Guided self-diagnosis); 3. The Moat (Core value proposition); 4. Perspectives (Thought leadership); 5. CTA. This structure is designed to feel like a conversation with a trusted partner, not a sales pitch from an expert. -->
+    <!-- Visualization & Content Choices: 1. Problem Gateway -> Interactive Cards -> Goal: Guide/Empathize -> Justification: Allows users to self-select their primary pain point, making the experience immediately relevant. 2. Founders' Pledge -> Storytelling block -> Goal: Build deep trust -> Justification: Transforms the founders' past struggles into the company's greatest strength and unique selling proposition. 3. Media Brands -> Content Showcase -> Goal: Prove ongoing diligence -> Justification: Positions the content not as self-promotion, but as evidence of continuous, proactive problem-solving on behalf of clients. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: True Black & Cyber Glow -->
-    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard with four main sections navigable via a sticky header: 1. **戰略總覽 (Overview)**: A high-level introduction combining the core mission, challenges, and target audience to set the stage. 2. **市場分析 (Market Analysis)**: An interactive section for exploring SWOT and competitive landscapes, allowing users to actively compare and understand the market position. 3. **內容引擎 (Content Engine)**: A focused area detailing the three content pillars and an interactive calendar, making the creative strategy tangible and easy to grasp. 4. **成長藍圖 (Growth Blueprint)**: A visual, phased roadmap combining platform strategy, ad spend, and an interactive KPI chart to demonstrate the path to success. This structure was chosen to transform the linear presentation into a dynamic, user-driven exploration tool, enabling stakeholders to digest complex information in a non-linear, intuitive way. -->
-    <!-- Visualization & Content Choices: 
-        - Report Info: SWOT Analysis -> Goal: Organize/Compare -> Viz: Four interactive cards in a grid -> Interaction: Hover to highlight -> Justification: More engaging than a static table, breaks down complex info into digestible chunks. -> Library/Method: HTML/Tailwind CSS.
-        - Report Info: Competitive Landscape -> Goal: Compare -> Viz: Interactive competitor profile viewer -> Interaction: Click buttons to switch between competitor data and see Johnny's Garage's unique value proposition. -> Justification: Actively engages the user in comparison, making the unique selling proposition much clearer than a list. -> Library/Method: HTML/Tailwind CSS, Vanilla JS.
-        - Report Info: Content Pillars -> Goal: Organize/Inform -> Viz: Tabbed interface with embedded visual mockups -> Interaction: Click tabs to reveal details and a concrete "Concept Mockup" for each content pillar. -> Justification: The mockups transform abstract strategies into tangible examples (Reel, Thumbnail, Story), making the plan immediately understandable and actionable. -> Library/Method: HTML/Tailwind CSS, Vanilla JS.
-        - Report Info: Phased KPIs -> Goal: Change/Compare -> Viz: Bar chart combined with a 3-stage selector -> Interaction: Clicking a phase button updates the chart data to show the shifting focus of KPIs over time. -> Justification: Visualizes the strategic evolution of metrics, making the long-term plan much more understandable than text lists. -> Library/Method: Chart.js (Canvas), Vanilla JS.
-    -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #000000; 
+            background-color: #1A1A1A; 
+            color: #F5F5F5;
         }
-        .nav-link {
-            transition: color 0.3s, border-bottom-color 0.3s;
-            border-bottom: 2px solid transparent;
+        h1, h2, h3, h4, h5, h6, .font-montserrat {
+            font-family: 'Montserrat', 'Noto Sans TC', sans-serif;
         }
-        .nav-link.active, .nav-link:hover {
-            color: #60a5fa; 
-            border-bottom-color: #60a5fa;
+        .brand-red { color: #D7263D; }
+        .bg-brand-red { background-color: #D7263D; }
+        .border-brand-red { border-color: #D7263D; }
+        
+        .card-link {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #333;
         }
-        .tab-link.active {
-            background-color: #60a5fa;
-            color: #000000;
+        .card-link:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            border-color: #D7263D;
         }
-        .tab-link:not(.active):hover {
-            background-color: #1f2937;
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        .phase-button.active {
-            background-color: #60a5fa;
-            color: #000000;
-            transform: scale(1.05);
-        }
-        .phase-button:not(.active):hover {
-            background-color: #374151;
-        }
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(96, 165, 250, 0.1), 0 4px 6px -2px rgba(96, 165, 250, 0.05);
+        .is-visible {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body class="bg-black text-gray-300">
+<body class="antialiased">
 
-    <header class="bg-black/80 backdrop-blur-lg shadow-lg shadow-blue-500/10 sticky top-0 z-50">
-        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center">
-                    <span class="font-bold text-xl text-blue-400">Apex計畫</span>
-                    <span class="text-gray-400 ml-2 hidden sm:inline">| 強尼車坊戰略儀表板</span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">戰略總覽</a>
-                        <a href="#market-analysis" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">市場分析</a>
-                        <a href="#content-engine" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">內容引擎</a>
-                        <a href="#growth-blueprint" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-gray-300">成長藍圖</a>
-                    </div>
-                </div>
-                <div class="-mr-2 flex md:hidden">
-                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                        </svg>
-                    </button>
-                </div>
+    <!-- Header -->
+    <header class="bg-[#1A1A1A]/80 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-800">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-2xl font-black text-white">黑匡國際顧問</a>
+            <div class="hidden lg:flex space-x-8 font-medium text-gray-400">
+                <a href="#moat" class="hover:text-white transition-colors">商業護城河</a>
+                <a href="#problems" class="hover:text-white transition-colors">解決煩惱</a>
+                <a href="#perspectives" class="hover:text-white transition-colors">觀點與實踐</a>
             </div>
+            <a href="#contact" class="bg-brand-red text-white py-2 px-6 rounded-full font-bold hover:bg-opacity-80 transition-transform hover:scale-105">
+                開始對話
+            </a>
         </nav>
-        <div id="mobile-menu" class="md:hidden hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#overview" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-300">戰略總覽</a>
-                <a href="#market-analysis" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-300">市場分析</a>
-                <a href="#content-engine" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-300">內容引擎</a>
-                <a href="#growth-blueprint" class="block nav-link px-3 py-2 rounded-md text-base font-medium text-gray-300">成長藍圖</a>
-            </div>
-        </div>
     </header>
 
-    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
-
-        <section id="overview" class="mb-16 scroll-mt-24">
-            <div class="text-center mb-12">
-                <h1 class="text-4xl md:text-5xl font-bold text-blue-400">從蘆洲車行到性能殿堂</h1>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">我們的核心目標是將強尼車坊隱藏的技術實力，轉化為北台灣最具影響力的性能權威品牌。</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8 text-center">
-                <div class="bg-gray-950 p-6 rounded-lg shadow-lg border border-gray-800 card-hover transition-all duration-300">
-                    <div class="text-4xl mb-4">📍</div>
-                    <h3 class="text-xl font-bold mb-2 text-white">當前挑戰</h3>
-                    <p class="text-gray-400">工業區位置、數位足跡空白。強大的技術實力，尚未被市場看見，潛力亟待釋放。</p>
-                </div>
-                <div class="bg-gray-950 p-6 rounded-lg shadow-lg border border-gray-800 card-hover transition-all duration-300">
-                    <div class="text-4xl mb-4">🎯</div>
-                    <h3 class="text-xl font-bold mb-2 text-white">品牌人格</h3>
-                    <p class="text-gray-400">我們將成為「誠信專家」：知識淵博而非傲慢，流程透明而非推銷，就像車友圈中最值得信賴的技術夥伴。</p>
-                </div>
-                <div class="bg-gray-950 p-6 rounded-lg shadow-lg border border-gray-800 card-hover transition-all duration-300">
-                    <div class="text-4xl mb-4">🛠️</div>
-                    <h3 class="text-xl font-bold mb-2 text-white">獨特定位</h3>
-                    <p class="text-gray-400">市場上唯一的「全方位性能生命週期夥伴」，整合選車、改裝、維修到賽道實證的完整故事線。</p>
+    <main>
+        <!-- 1. Hero Section -->
+        <section id="hero" class="py-28 md:py-40">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-5xl md:text-7xl font-black text-white leading-tight fade-in">
+                    為什麼您的行銷投入，<br class="hidden md:block" />總像把錢丟進水裡？
+                </h1>
+                <p class="mt-8 text-lg md:text-xl max-w-3xl mx-auto text-gray-300 fade-in" style="transition-delay: 200ms;">
+                    您做的每支影片、下的每筆廣告，都應該是為品牌建造「護城河」的一塊磚，而不是一場絢爛卻短暫的煙火。我們不做奇蹟，我們只做能<strong class="text-white">累積價值</strong>的工程。
+                </p>
+                <div class="mt-12 fade-in" style="transition-delay: 400ms;">
+                    <a href="#problems" class="bg-brand-red text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-opacity-80 transition-transform hover:scale-105 inline-block">
+                        停止浪費，開始建造
+                    </a>
                 </div>
             </div>
         </section>
 
-        <section id="market-analysis" class="mb-16 scroll-mt-24">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-blue-400">市場分析：我們的定位</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">在競爭激烈的市場中，了解自身優劣勢與對手動態是致勝關鍵。此區塊將互動式地呈現我們的SWOT分析與獨特利基，點擊下方的按鈕以探索不同的競爭者。</p>
-            </div>
-            
-            <div class="mb-12">
-                <h3 class="text-2xl font-semibold text-center mb-6 text-white">SWOT 分析</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-green-900/20 p-6 rounded-lg border-l-4 border-green-500">
-                        <h4 class="font-bold text-lg text-green-400 mb-2">優勢 (S)</h4>
-                        <ul class="list-disc list-inside text-green-300 space-y-1">
-                            <li>頂尖維修/改裝技術</li>
-                            <li>賽車隊信譽背書</li>
-                            <li>車廠日常的真實內容</li>
-                        </ul>
-                    </div>
-                    <div class="bg-red-900/20 p-6 rounded-lg border-l-4 border-red-500">
-                        <h4 class="font-bold text-lg text-red-400 mb-2">劣勢 (W)</h4>
-                        <ul class="list-disc list-inside text-red-300 space-y-1">
-                            <li>地理位置不佳</li>
-                            <li>數位足跡空白</li>
-                            <li>行銷經驗匱乏</li>
-                        </ul>
-                    </div>
-                    <div class="bg-blue-900/20 p-6 rounded-lg border-l-4 border-blue-500">
-                        <h4 class="font-bold text-lg text-blue-400 mb-2">機會 (O)</h4>
-                        <ul class="list-disc list-inside text-blue-300 space-y-1">
-                            <li>「誠信專家」市場缺口</li>
-                            <li>高忠誠度社群潛力</li>
-                            <li>吸引高價值客戶</li>
-                        </ul>
-                    </div>
-                    <div class="bg-yellow-900/20 p-6 rounded-lg border-l-4 border-yellow-500">
-                        <h4 class="font-bold text-lg text-yellow-400 mb-2">威脅 (T)</h4>
-                        <ul class="list-disc list-inside text-yellow-300 space-y-1">
-                            <li>已存在的數位競爭者</li>
-                            <li>內容創作的資源需求</li>
-                            <li>平台演算法依賴性</li>
-                        </ul>
-                    </div>
+        <!-- 2. Problem Gateway -->
+        <section id="problems" class="py-20 md:py-28 bg-[#111]">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white fade-in">您的煩惱，聽起來是否像這樣？</h2>
+                    <p class="mt-4 text-gray-400 max-w-2xl mx-auto fade-in">大多數時候，問題的根源不出兩個地方：</p>
+                </div>
+                
+                <div class="mt-16 max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
+                    <!-- Brand Problems Card -->
+                    <a href="#" class="card-link block bg-[#222] p-8 rounded-lg fade-in">
+                        <h3 class="text-3xl font-bold text-white">砸錢做行銷，客人還是不上門？</h3>
+                        <div class="mt-6 space-y-4 text-gray-300">
+                            <p class="flex items-start"><span class="text-brand-red mr-3 mt-1 font-bold">?</span><span>感覺品牌的好，市場卻感受不到？</span></p>
+                            <p class="flex items-start"><span class="text-brand-red mr-3 mt-1 font-bold">?</span><span>為什麼砸了錢，卻只換來短暫的流量？</span></p>
+                        </div>
+                        <div class="mt-8 font-bold text-brand-red text-lg">解決我的品牌煩惱 →</div>
+                    </a>
+                    <!-- Team Problems Card -->
+                    <a href="#" class="card-link block bg-[#222] p-8 rounded-lg fade-in" style="transition-delay: 200ms;">
+                        <h3 class="text-3xl font-bold text-white">成交機會就在眼前，為何總是會錯失？</h3>
+                        <div class="mt-6 space-y-4 text-gray-300">
+                            <p class="flex items-start"><span class="text-brand-red mr-3 mt-1 font-bold">?</span><span>團隊的才華，是否正被溝通的摩擦力內耗？</span></p>
+                            <p class="flex items-start"><span class="text-brand-red mr-3 mt-1 font-bold">?</span><span>為什麼最好的策略，總在執行時走樣？</span></p>
+                        </div>
+                        <div class="mt-8 font-bold text-white text-lg">解決我的團隊煩惱 →</div>
+                    </a>
                 </div>
             </div>
+        </section>
 
-            <div>
-                <h3 class="text-2xl font-semibold text-center mb-6 text-white">競爭格局互動分析</h3>
-                 <div class="bg-gray-950 p-6 rounded-lg shadow-lg border border-gray-800">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex md:flex-col justify-start md:justify-center gap-2">
-                            <button class="competitor-btn text-sm md:text-base p-2 md:p-3 rounded-lg w-full text-left transition duration-300" data-competitor="johnny">強尼車坊</button>
-                            <button class="competitor-btn text-sm md:text-base p-2 md:p-3 rounded-lg w-full text-left transition duration-300" data-competitor="shih">小施汽車</button>
-                            <button class="competitor-btn text-sm md:text-base p-2 md:p-3 rounded-lg w-full text-left transition duration-300" data-competitor="chengpin">誠品汽車</button>
-                            <button class="competitor-btn text-sm md:text-base p-2 md:p-3 rounded-lg w-full text-left transition duration-300" data-competitor="madman">狂人日誌</button>
-                        </div>
-                        <div class="flex-grow bg-black p-6 rounded-lg border border-gray-800 min-h-[200px]">
-                            <h4 id="competitor-name" class="font-bold text-xl mb-2 text-blue-400"></h4>
-                            <p id="competitor-slogan" class="text-gray-300 font-medium italic mb-4"></p>
-                            <p id="competitor-desc" class="text-gray-400"></p>
+        <!-- 3. The Business Moat -->
+        <section id="moat" class="py-20 md:py-28">
+            <div class="container mx-auto px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white fade-in">我們不賣煙火，我們建造護城河。</h2>
+                    <p class="mt-6 text-lg text-gray-300 fade-in">在這個不斷變化的市場，短期的成功如同煙火，絢爛卻短暫。真正的企業價值，來自一條由<strong class="text-white">清晰策略、一致溝通、與團隊共識</strong>所共同打造的、深不可測的商業護城河。這就是我們唯一專注的工程。</p>
+                    <div class="mt-12 border-t-2 border-brand-red w-24 mx-auto fade-in"></div>
+                    <div class="mt-12 text-lg text-gray-300 space-y-6 fade-in text-left">
+                        <div class="bg-[#222] p-8 rounded-lg border border-gray-800">
+                            <div class="md:flex md:items-center md:gap-8">
+                                <!-- Visual Representation -->
+                                <div class="md:w-1/3 flex-shrink-0 mb-8 md:mb-0">
+                                    <div class="bg-[#111] border border-gray-700 rounded-lg p-6">
+                                        <div class="flex items-center mb-4">
+                                            <div class="w-8 h-8 bg-brand-red rounded-sm flex items-center justify-center text-white font-bold text-lg">匡</div>
+                                            <h4 class="ml-3 text-lg font-bold text-white">商業分析報告</h4>
+                                        </div>
+                                        <div class="space-y-2 text-sm text-gray-400">
+                                            <p class="border-b border-gray-600 pb-1">市場機會分析</p>
+                                            <p class="border-b border-gray-600 pb-1">目標客群洞察</p>
+                                            <p class="border-b border-gray-600 pb-1">競爭對手策略</p>
+                                            <p>流量潛力評估</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Explanation -->
+                                <div class="md:w-2/3">
+                                    <h3 class="text-2xl font-bold text-white">在動工之前，先有藍圖。</h3>
+                                    <p class="mt-4 text-gray-300">我們堅持，在說任何故事、拍任何影片之前，必須先回答最根本的商業問題。這就是為什麼我們的合作，永遠始於一份<strong class="text-brand-red">《商業分析報告》</strong>。這不是一份提案，這是我們對您商業問題的<strong class="text-white">診斷書</strong>。我們用數據洞察取代主觀猜測，確保後續的每一個行動，都在解決真正的問題。</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="content-engine" class="mb-16 scroll-mt-24">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-blue-400">內容引擎：三大核心支柱</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">內容是我們與世界溝通的語言。此處不僅有戰術，更有可視化的執行範例，讓創意落地。點擊不同分頁，查看每個內容支柱的詳細策略與概念示意。</p>
-            </div>
-
-            <div class="bg-gray-950 p-6 rounded-lg shadow-lg border border-gray-800">
-                <div class="mb-6 border-b border-gray-700">
-                    <nav class="-mb-px flex space-x-1 sm:space-x-4" aria-label="Tabs">
-                        <button class="tab-link whitespace-nowrap py-3 px-4 text-gray-300 font-medium text-sm rounded-t-lg transition" data-tab="workshop">專業職人場</button>
-                        <button class="tab-link whitespace-nowrap py-3 px-4 text-gray-300 font-medium text-sm rounded-t-lg transition" data-tab="chronicles">改裝進化論</button>
-                        <button class="tab-link whitespace-nowrap py-3 px-4 text-gray-300 font-medium text-sm rounded-t-lg transition" data-tab="paddock">賽道最前線</button>
-                    </nav>
+        <!-- 4. Perspectives & Practices (Media Brands) -->
+        <section id="perspectives" class="py-20 md:py-28 bg-[#111]">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-white fade-in">觀點與實踐</h2>
+                    <p class="mt-6 text-lg max-w-3xl mx-auto text-gray-300 fade-in">要解決今日的商業難題，不能只靠昨日的經驗。市場瞬息萬變，我們也必須持續進化。這個空間，就是我們的磨刀石。「黑匡雙語雜誌」與「解讀劑」是我們保持敏銳、與市場同步的公開實踐。在這裡，我們磨練觀點、測試想法。它們不直接代表我們的顧問服務，但它們所淬鍊出的鋒利洞察，正是我們能為您劈開商業迷霧的底氣。</p>
                 </div>
-                <div id="tab-content" class="min-h-[220px] p-2 sm:p-4 bg-black rounded-b-lg">
+                <div class="mt-16 grid md:grid-cols-2 gap-8">
+                    <!-- Hei Kuang Magazine -->
+                    <div class="bg-[#222] p-8 rounded-lg border border-gray-800 fade-in">
+                        <h3 class="text-2xl font-bold text-white">黑匡雙語雜誌</h3>
+                        <p class="mt-2 text-gray-400">一個致力於介紹SDGs永續發展議題的中性溫和第三方媒體。我們相信，有效的溝通是推動永續發展的核心。</p>
+                        <a href="#" class="mt-6 inline-block font-bold text-brand-red">閱讀最新洞察 →</a>
+                    </div>
+                    <!-- Antidot -->
+                    <div class="bg-[#222] p-8 rounded-lg border border-gray-800 fade-in" style="transition-delay: 200ms;">
+                        <h3 class="text-2xl font-bold text-white">解讀劑 antidot</h3>
+                        <p class="mt-2 text-gray-400">透過YT影像，為您解讀瞬息萬變的市場趨勢，提供具備商業價值的觀點。</p>
+                        <a href="#" class="mt-6 inline-block font-bold text-brand-red">觀看最新分析 →</a>
+                    </div>
                 </div>
             </div>
         </section>
-
-        <section id="growth-blueprint" class="scroll-mt-24">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-blue-400">成長藍圖：三階段作戰計畫</h2>
-                <p class="mt-4 text-lg text-gray-400 max-w-3xl mx-auto">成功並非一蹴可幾。我們將分三階段推進，從建立基礎、擴大影響力到實現營收，每一步都有明確目標。點擊下方按鈕，探索各階段的策略重點與KPI焦點變化。</p>
-            </div>
-
-            <div class="bg-gray-950 p-6 rounded-lg shadow-lg border border-gray-800">
-                <div class="flex justify-center mb-8">
-                    <div class="flex space-x-2 sm:space-x-4 bg-gray-800 p-2 rounded-full">
-                        <button class="phase-button px-3 py-2 sm:px-6 sm:py-2 text-sm text-gray-300 font-medium rounded-full transition-all duration-300" data-phase="1">階段一</button>
-                        <button class="phase-button px-3 py-2 sm:px-6 sm:py-2 text-sm text-gray-300 font-medium rounded-full transition-all duration-300" data-phase="2">階段二</button>
-                        <button class="phase-button px-3 py-2 sm:px-6 sm:py-2 text-sm text-gray-300 font-medium rounded-full transition-all duration-300" data-phase="3">階段三</button>
-                    </div>
-                </div>
-
-                <div class="grid md:grid-cols-5 gap-8 items-center">
-                    <div id="phase-details" class="md:col-span-2 space-y-4">
-                        <h3 id="phase-title" class="text-2xl font-bold text-blue-400"></h3>
-                        <p id="phase-duration" class="text-sm font-medium text-gray-500"></p>
-                        <p id="phase-goal" class="text-gray-400"></p>
-                        <div>
-                            <h4 class="font-semibold text-white mb-2">主要行動：</h4>
-                            <p id="phase-ads" class="text-gray-400"></p>
-                        </div>
-                    </div>
-                    <div class="md:col-span-3">
-                        <div class="chart-container relative h-64 sm:h-80 w-full max-w-lg mx-auto">
-                            <canvas id="kpiChart"></canvas>
-                        </div>
-                        <p class="text-center text-sm text-gray-500 mt-2">核心KPI焦點示意圖</p>
-                    </div>
+        
+        <!-- 5. Contact / CTA -->
+        <section id="contact" class="py-28 md:py-40">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-5xl md:text-7xl font-black text-white fade-in">
+                    讓我們從一場<br class="hidden md:block" />真誠的對話開始。
+                </h2>
+                <p class="mt-8 text-lg md:text-xl max-w-2xl mx-auto text-gray-300 fade-in" style="transition-delay: 200ms;">
+                    我們不做浮誇的提案，也不承諾無法實現的奇蹟。我們只想聽聽您的煩惱，並與您一同規劃一條務實、可累積的成功路徑。
+                </p>
+                <div class="mt-12 fade-in" style="transition-delay: 400ms;">
+                    <a href="#" class="bg-brand-red text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-opacity-80 transition-transform hover:scale-105 inline-block">
+                        預約一次探索會議
+                    </a>
                 </div>
             </div>
         </section>
     </main>
-    
-    <footer class="bg-gray-950 mt-16 border-t border-gray-800">
-        <div class="container mx-auto py-6 px-4 sm:px-6 lg:px-8 text-center text-gray-500 text-sm">
-            <p>&copy; 2025 Apex計畫 | 為強尼車坊量身打造. Designed by 黑潮國際行銷事務所.</p>
+
+    <footer class="border-t border-gray-800">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-500">
+            <p>&copy; 2025 Hei Kuang International Consulting. All Rights Reserved.</p>
         </div>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-            
-            const navLinks = document.querySelectorAll('.nav-link');
-            const sections = document.querySelectorAll('main section');
-
-            function updateActiveLink() {
-                let index = sections.length;
-                while(--index && window.scrollY + 100 < sections[index].offsetTop) {}
-                
-                navLinks.forEach((link) => link.classList.remove('active'));
-                
-                const activeLink = document.querySelector(`.nav-link[href="#${sections[index].id}"]`);
-                if(activeLink){
-                   activeLink.classList.add('active');
-                }
-            }
-            window.addEventListener('scroll', updateActiveLink);
-            updateActiveLink();
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
-                    if (mobileMenu.classList.contains('hidden') === false) {
-                        mobileMenu.classList.add('hidden');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
                     }
                 });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
             });
-
-            const competitorData = {
-                johnny: {
-                    name: "強尼車坊 (我們)",
-                    slogan: "全方位性能生命週期夥伴",
-                    desc: "我們的獨特機會在於整合「選車 → 改裝 → 維修 → 賽道實證」的完整故事線。我們不僅賣車或服務，更販售一種經過賽道驗證的信任與夢想實現的能力。"
-                },
-                shih: {
-                    name: "小施汽車",
-                    slogan: "賣的是「信任感」的中古車",
-                    desc: "以極高的透明度和親和力，建立起強大的觀眾信任。核心是中古車交易，內容圍繞生活化、誠信透明展開。"
-                },
-                chengpin: {
-                    name: "誠品汽車",
-                    slogan: "賣的是「專家級」的性能調校",
-                    desc: "專精於VAG車系的動力調校，以馬力機數據和賽道成績建立技術權威。品牌溝通專業，但較缺乏溫度。"
-                },
-                madman: {
-                    name: "狂人日誌",
-                    slogan: "賣的是「嚮往感」的汽車文化",
-                    desc: "以電影級的影像製作水準和生活美學敘事，創造強烈的品牌嚮往感。其本質為媒體，而非服務提供者。"
-                }
-            };
-
-            const competitorBtns = document.querySelectorAll('.competitor-btn');
-            const competitorNameEl = document.getElementById('competitor-name');
-            const competitorSloganEl = document.getElementById('competitor-slogan');
-            const competitorDescEl = document.getElementById('competitor-desc');
-
-            function updateCompetitorInfo(competitorKey) {
-                const data = competitorData[competitorKey];
-                competitorNameEl.textContent = data.name;
-                competitorSloganEl.textContent = data.slogan;
-                competitorDescEl.textContent = data.desc;
-
-                competitorBtns.forEach(btn => {
-                    if (btn.dataset.competitor === competitorKey) {
-                        btn.classList.add('bg-blue-600', 'text-white');
-                        btn.classList.remove('bg-gray-800', 'text-gray-300');
-                    } else {
-                        btn.classList.add('bg-gray-800', 'text-gray-300');
-                        btn.classList.remove('bg-blue-600', 'text-white');
-                    }
-                });
-            }
-
-            competitorBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    updateCompetitorInfo(e.target.dataset.competitor);
-                });
-            });
-            updateCompetitorInfo('johnny');
-
-            const tabData = {
-                workshop: {
-                    title: "專業職人場 (The Master's Workshop)",
-                    goal: "建立「誠信專家」權威。",
-                    content: "揭秘維修改裝知識、破解迷思、提供實用養車技巧。賦予觀眾知識，幫助他們做出更明智的決策。",
-                    example_html: `
-                        <h5 class="text-lg font-semibold text-blue-400 mb-4 border-l-4 border-blue-400 pl-3">概念示意：Instagram Reel</h5>
-                        <div class="bg-gray-900 p-4 rounded-lg border border-gray-800 max-w-sm mx-auto">
-                            <div class="flex items-center mb-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">J</div>
-                                <span class="ml-2 font-semibold text-white">強尼車坊</span>
-                            </div>
-                            <div class="bg-black aspect-[9/16] rounded flex flex-col justify-center items-center p-4 border border-gray-800">
-                                <h6 class="text-xl font-bold text-center text-white">引擎絕對不能出現的<br>3種異音！</h6>
-                                <ul class="text-gray-300 list-none space-y-3 mt-4 text-center">
-                                    <li><span class="text-red-500 font-bold">1. 吱吱聲：</span>可能是皮帶打滑</li>
-                                    <li><span class="text-red-500 font-bold">2. 喀喀聲：</span>可能是氣門間隙過大</li>
-                                    <li><span class="text-red-500 font-bold">3. 咕嚕聲：</span>可能是冷卻系統問題</li>
-                                </ul>
-                                <p class="mt-4 text-xs text-yellow-400 text-center">聽到請立刻熄火檢查！</p>
-                            </div>
-                            <div class="mt-3 text-sm text-gray-400">
-                                <p><strong class="text-white">強尼車坊</strong> 養車先養觀念，小錢不花，就等著花大錢！ #養車知識 #引擎保養 #異音</p>
-                                <p class="text-xs mt-1 text-gray-500">CTA: 下一個迷思破解想看什麼？留言告訴我們！</p>
-                            </div>
-                        </div>
-                    `
-                },
-                chronicles: {
-                    title: "改裝進化論 (Project Car Chronicles)",
-                    goal: "講述品牌故事，創造追劇感。",
-                    content: "系列化記錄一台車從無到有的完整改造過程。透過旅程本身的故事性，製造懸念，鼓勵觀眾持續追蹤。",
-                    example_html: `
-                        <h5 class="text-lg font-semibold text-blue-400 mb-4 border-l-4 border-blue-400 pl-3">概念示意：YouTube 影片縮圖</h5>
-                        <div class="bg-gray-900 p-4 rounded-lg border border-gray-800 max-w-lg mx-auto">
-                           <div class="aspect-video bg-black rounded-lg flex items-center justify-center relative overflow-hidden border border-gray-800">
-                                <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://placehold.co/1280x720/000000/FFFFFF?text=GTI'); opacity: 0.5;"></div>
-                                <div class="relative z-10 text-center">
-                                    <p class="text-sm bg-red-600 text-white font-bold px-2 py-1 inline-block rounded">APEX計畫 EP.2</p>
-                                    <h6 class="text-3xl font-black text-white mt-2 drop-shadow-lg">馬力機殘酷實測！</h6>
-                                    <p class="text-xl font-bold text-yellow-300 drop-shadow-lg">一階ECU能提升多少匹？</p>
-                                </div>
-                           </div>
-                           <div class="mt-3">
-                                <h6 class="text-lg font-bold text-white">GTI計畫EP2：一階ECU調校與馬力機殘酷實測！</h6>
-                                <p class="text-sm text-gray-400">強尼車坊 • 觀看次數：1.2萬次 • 2天前</p>
-                                <p class="text-xs mt-1 text-gray-500">CTA: 訂閱並開啟小鈴鐺，才不會錯過下一集！</p>
-                           </div>
-                        </div>
-                    `
-                },
-                paddock: {
-                    title: "賽道最前線 (From the Paddock)",
-                    goal: "展示終極實力，創造差異化。",
-                    content: "利用賽車隊獨家資產，提供高刺激性、充滿幕後感的內容。展示我們的專業技術如何在極端條件下被考驗與應用。",
-                    example_html: `
-                        <h5 class="text-lg font-semibold text-blue-400 mb-4 border-l-4 border-blue-400 pl-3">概念示意：Instagram 限時動態</h5>
-                        <div class="bg-gray-900 p-4 rounded-lg border border-gray-800 max-w-sm mx-auto">
-                            <div class="aspect-[9/16] bg-black rounded-lg p-4 flex flex-col justify-between border border-gray-800" style="background-image: url('https://placehold.co/540x960/1a1a1a/FFFFFF?text=維修區'); background-size: cover; background-position: center;">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">J</div>
-                                        <span class="text-white font-semibold text-sm">強尼車坊</span>
-                                        <span class="text-gray-400 text-xs">2小時</span>
-                                    </div>
-                                </div>
-                                <div class="bg-black/60 backdrop-blur-sm p-3 rounded-lg text-center">
-                                    <p class="text-white font-bold">賽前整備中！猜這次單圈能推進幾秒？</p>
-                                    <div class="mt-3 space-y-2 text-sm">
-                                        <div class="bg-white/20 p-2 rounded text-white text-left relative">
-                                            <div class="bg-blue-500 h-full absolute top-0 left-0 rounded" style="width: 75%;"></div>
-                                            <span class="relative z-10 pl-2">推進 0.5-1 秒</span>
-                                        </div>
-                                        <div class="bg-white/20 p-2 rounded text-white text-left relative">
-                                            <div class="bg-blue-500 h-full absolute top-0 left-0 rounded" style="width: 25%;"></div>
-                                            <span class="relative z-10 pl-2">推進 1 秒以上</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `
-                }
-            };
-            const tabLinks = document.querySelectorAll('.tab-link');
-            const tabContentEl = document.getElementById('tab-content');
-
-            function updateTabContent(tabKey) {
-                const data = tabData[tabKey];
-                tabContentEl.innerHTML = `
-                    <div class="grid md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <h4 class="font-bold text-xl mb-3 text-white">${data.title}</h4>
-                            <p class="mb-2"><strong class="font-semibold text-blue-400">目標：</strong>${data.goal}</p>
-                            <p class="text-gray-400">${data.content}</p>
-                        </div>
-                        <div class="mt-6 md:mt-0">
-                            ${data.example_html}
-                        </div>
-                    </div>
-                `;
-                tabLinks.forEach(link => {
-                    link.classList.toggle('active', link.dataset.tab === tabKey);
-                });
-            }
-            
-            tabLinks.forEach(link => {
-                link.addEventListener('click', (e) => {
-                    updateTabContent(e.target.dataset.tab);
-                });
-            });
-            updateTabContent('workshop');
-            
-            const phaseData = {
-                '1': {
-                    title: "階段一：基礎建立期",
-                    duration: "1-3個月",
-                    goal: "建立社群基本樣貌，積累第一批粉絲，並測試三大內容支柱的受歡迎程度。",
-                    action: "推廣表現最好的短影音，目標為粉絲增長與內容曝光。",
-                    kpis: { labels: ['粉絲數/觸及', '互動/私訊', '預約工單'], data: [8, 2, 0] }
-                },
-                '2': {
-                    title: "階段二：影響力擴張期",
-                    duration: "4-9個月",
-                    goal: "鞏固品牌專家形象，並開始產生來自社群的服務諮詢。",
-                    action: "對已互動過的用戶進行再行銷，提供價值內容，引導諮詢。",
-                    kpis: { labels: ['粉絲數/觸及', '互動/私訊', '預約工單'], data: [5, 8, 2] }
-                },
-                '3': {
-                    title: "階段三：營收轉化期",
-                    duration: "10個月+",
-                    goal: "將潛在客戶有效轉化為付費客戶，建立可預測的營收來源。",
-                    action: "著重轉化型廣告，提供明確的服務方案與預約入口。",
-                    kpis: { labels: ['粉絲數/觸及', '互動/私訊', '預約工單'], data: [2, 5, 9] }
-                }
-            };
-
-            const phaseButtons = document.querySelectorAll('.phase-button');
-            const phaseTitleEl = document.getElementById('phase-title');
-            const phaseDurationEl = document.getElementById('phase-duration');
-            const phaseGoalEl = document.getElementById('phase-goal');
-            const phaseAdsEl = document.getElementById('phase-ads');
-            let kpiChart;
-
-            function updatePhaseContent(phaseKey) {
-                const data = phaseData[phaseKey];
-                phaseTitleEl.textContent = data.title;
-                phaseDurationEl.textContent = data.duration;
-                phaseGoalEl.textContent = data.goal;
-                phaseAdsEl.textContent = data.action;
-
-                phaseButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.phase === phaseKey);
-                });
-                updateChart(data.kpis);
-            }
-
-            function updateChart(kpiData) {
-                if(kpiChart){
-                    kpiChart.data.labels = kpiData.labels;
-                    kpiChart.data.datasets[0].data = kpiData.data;
-                    kpiChart.update();
-                }
-            }
-
-            function createChart(){
-                const ctx = document.getElementById('kpiChart').getContext('2d');
-                kpiChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: [],
-                        datasets: [{
-                            label: '指標焦點程度',
-                            data: [],
-                            backgroundColor: [
-                                'rgba(96, 165, 250, 0.7)',
-                                'rgba(248, 113, 113, 0.7)',
-                                'rgba(52, 211, 153, 0.7)'
-                            ],
-                            borderColor: [
-                                'rgba(96, 165, 250, 1)',
-                                'rgba(248, 113, 113, 1)',
-                                'rgba(52, 211, 153, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        indexAxis: 'y',
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                max: 10,
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)',
-                                    borderColor: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: '#9ca3af'
-                                }
-                            },
-                             y: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: '#d1d5db'
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                enabled: true,
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        if (context.parsed.x !== null) {
-                                            label += context.parsed.x + ' / 10';
-                                        }
-                                        return label;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            createChart();
-            phaseButtons.forEach(btn => {
-                btn.addEventListener('click', e => {
-                    updatePhaseContent(e.target.dataset.phase);
-                });
-            });
-            updatePhaseContent('1');
         });
     </script>
 </body>
