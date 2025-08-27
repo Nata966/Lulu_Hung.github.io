@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lulu品牌IP互動式戰略中心</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Earth Tones (大地色系) -->
+    <!-- Application Structure Plan: A single-page application with a fixed top header for navigation and a main content area for interactive modules. This structure provides a more traditional and familiar web experience, maximizing screen real estate for content. The user flow remains non-linear, empowering users to explore the strategy based on their immediate needs. -->
+    <!-- Visualization & Content Choices: 
+        - Core Strategy: Goal=Organize. Method=Interactive concentric circles (HTML/CSS) with hover interactions to explain the "Story-First Funnel". Justification=Visually represents the layered model better than text.
+        - Roadmap: Goal=Show Change. Method=Interactive timeline linked to a Chart.js bar chart. Interaction=Clicking a quarter updates the chart and details, showing the strategic focus shift. Justification=Dynamically connects long-term vision with quarterly execution.
+        - Content Plan: Goal=Inform. Method=Chart.js Donut chart for the 4-3-3 ratio. Justification=Provides an instant visual summary of content allocation.
+        - KPIs: Goal=Inform. Method=Three-card layout with dynamic text updated by roadmap interaction. Justification=Clearly separates metrics and links them to strategic phases.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F8F5F2; /* 更柔和的米白 */
+            color: #5D544D; /* 深暖棕 */
+        }
+        h1, h2, h3, .font-serif {
+            font-family: 'Noto Serif TC', serif;
+        }
+        .active-nav {
+            color: #D8A373 !important; /* 赤陶色 */
+            font-weight: 700;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 280px;
+            max-height: 350px;
+        }
+        .timeline-item {
+            transition: opacity 0.3s ease-in-out;
+        }
+        .timeline-item.active {
+            opacity: 1;
+        }
+        .timeline-nav-item {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .timeline-nav-item.active, .timeline-nav-item:hover {
+            border-bottom-color: #D8A373;
+            color: #D8A373;
+        }
+        .strategy-flow-item {
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #EAE7E0;
+        }
+        .strategy-flow-item:hover {
+            transform: translateY(-5px);
+            border-color: #D8A373;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Header Navigation -->
+    <header class="bg-transparent text-[#5D544D] py-4 px-6 sticky top-0 z-50 backdrop-blur-sm bg-opacity-80 border-b border-gray-200">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-lg md:text-xl font-bold font-serif">燈塔計畫 企劃書</h1>
+            <nav class="hidden lg:flex items-center space-x-6 text-sm">
+                <a href="#intro" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">開篇</a>
+                <a href="#crisis" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">時代的焦慮</a>
+                <a href="#lulu-story" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">你的故事</a>
+                <a href="#strategy" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">我們的策略</a>
+                <a href="#mindset" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">策略心法</a>
+                <a href="#roadmap" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">行動藍圖</a>
+                <a href="#scripts" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">腳本剖析</a>
+                <a href="#integration" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">美容整合</a>
+                <a href="#risks" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">風險與守護</a>
+                <a href="#next-steps" class="nav-link transition-colors duration-300 hover:text-[#D8A373]">下一步</a>
+            </nav>
+            <button id="mobile-menu-button" class="lg:hidden p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <!-- Mobile Nav -->
+        <div id="mobile-menu" class="hidden lg:hidden mt-4 bg-white/90 rounded-lg shadow-lg p-2">
+            <a href="#intro" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">開篇</a>
+            <a href="#crisis" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">時代的焦慮</a>
+            <a href="#lulu-story" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">你的故事</a>
+            <a href="#strategy" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">我們的策略</a>
+            <a href="#mindset" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">策略心法</a>
+            <a href="#roadmap" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">行動藍圖</a>
+            <a href="#scripts" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">腳本剖析</a>
+            <a href="#integration" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">美容整合</a>
+            <a href="#risks" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">風險與守護</a>
+            <a href="#next-steps" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">下一步</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 sm:p-8 md:p-12">
+        <div class="space-y-20 md:space-y-24">
+            <!-- Section 0: Intro -->
+            <section id="intro" class="scroll-mt-24 text-center">
+                <h2 class="text-4xl md:text-5xl font-bold font-serif text-[#A1887F] mb-4">點亮真實，引領蛻變</h2>
+                <p class="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">這不僅是一份商業提案，<br>而是一次關於<span class="font-bold">看見自己、定義自己、成為光</span>的旅程邀請。</p>
+                <p class="text-gray-700 leading-relaxed max-w-3xl mx-auto">我們將共同探索你的故事，並將你獨一無二的人生經歷，轉化為一個能觸動人心、引發深刻共鳴的品牌。這份企劃書，是我們對這趟旅程的規劃與承諾。</p>
+            </section>
+
+            <!-- Section 1: Market Crisis -->
+            <section id="crisis" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-red-700 mb-4">時代的焦慮，與我們的機會</h2>
+                    <p class="text-gray-600 max-w-3xl mx-auto">在談論機會之前，我們必須先同理這個時代女性的集體困境。這不是危機，而是我們之所以存在的理由。</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white border border-gray-200 p-6 rounded-xl">
+                        <h3 class="font-bold text-lg text-red-800 mb-2">① 信任的荒漠</h3>
+                        <p class="text-gray-700 text-sm">傳統廣告與KOL業配，讓我們學會了質疑。我們渴望的不再是完美的代言人，而是有瑕疵、有故事、能讓我們看見自己的<span class="font-bold">真實的人</span>。</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 p-6 rounded-xl">
+                        <h3 class="font-bold text-lg text-red-800 mb-2">② 喧囂的噪音</h3>
+                        <p class="text-gray-700 text-sm">無數品牌都在高喊「愛自己」，但多數只停留在口號。在資訊的轟炸中，我們需要的是能真正<span class="font-bold">引導我們向內探索</span>的聲音。</p>
+                    </div>
+                    <div class="bg-white border border-gray-200 p-6 rounded-xl">
+                        <h3 class="font-bold text-lg text-red-800 mb-2">③ 靈魂的缺口</h3>
+                        <p class="text-gray-700 text-sm">多數商業行為只關心「交易」，卻忽略了我們內心對<span class="font-bold">成長、歸屬感與自我認同</span>的深層渴望。這正是品牌能真正發揮價值的地方。</p>
+                    </div>
+                </div>
+                <div class="mt-10 bg-white p-6 rounded-xl text-center shadow-sm">
+                    <h3 class="font-bold font-serif text-xl text-[#A1887F]">我們的信念：故事是唯一的解藥</h3>
+                    <p class="text-gray-700 mt-2">在這樣的時代，一個真實、動人且能引發深度共鳴的<span class="font-bold">個人故事IP</span>，是建立信任、穿越噪音、填補缺口的唯一路徑。</p>
+                </div>
+            </section>
+
+            <!-- Section 2: Lulu's Story -->
+            <section id="lulu-story" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">你的故事，無價的資產</h2>
+                    <p class="text-gray-600 max-w-3xl mx-auto">Lulu，你的人生就是一部當代女性的奮鬥史。你的經歷，是我們所有策略的基石與靈感來源。</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div id="timeline-nav" class="flex flex-wrap justify-center gap-4 md:gap-6 mb-8">
+                        <span class="timeline-nav-item active" data-year="2015">2015-2019<br>迷惘探索</span>
+                        <span class="timeline-nav-item" data-year="2020">2020-2022<br>逆境創業</span>
+                        <span class="timeline-nav-item" data-year="2023">2023<br>勇敢試錯</span>
+                        <span class="timeline-nav-item" data-year="2024">2024<br>忠於自我</span>
+                        <span class="timeline-nav-item" data-year="2025">2025<br>蛻變整合</span>
+                    </div>
+                    <div id="timeline-content-container" class="w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-200 min-h-[200px]">
+                        <div class="timeline-item active" data-year="2015">
+                            <h3 class="font-serif text-2xl text-[#D8A373] mb-3">斜槓生存，尋找微光</h3>
+                            <p class="text-gray-700 leading-relaxed">大學畢業後，你在夜市、咖啡廳、家教、直銷中掙扎求生。這段經歷淬煉出你<span class="font-bold">強大的韌性</span>與<span class="font-bold">不畏嘗試的勇氣</span>，也代表了無數年輕人「不知往何處去，但從未停下腳步」的真實寫照。</p>
+                        </div>
+                        <div class="timeline-item hidden" data-year="2020">
+                            <h3 class="font-serif text-2xl text-[#D8A373] mb-3">疫情中的塔羅師</h3>
+                            <p class="text-gray-700 leading-relaxed">在人生最迷惘時，你遇見塔羅，並在疫情最嚴峻時，於士林夜市擺攤創業。這段經歷證明了你<span class="font-bold">在危機中尋找轉機的敏銳</span>，以及<span class="font-bold">將內在探索轉化為專業服務的能力</span>。</p>
+                        </div>
+                        <div class="timeline-item hidden" data-year="2023">
+                            <h3 class="font-serif text-2xl text-[#D8A373] mb-3">365天的婚姻練習</h3>
+                            <p class="text-gray-700 leading-relaxed">閃婚、進入家族企業，卻在安逸中察覺到內耗，最終毅然選擇離婚。這段經歷是你<span class="font-bold">「敢愛敢恨，更敢於修正錯誤」</span>的核心體現，將是引爆社群共鳴的最強故事。</p>
+                        </div>
+                        <div class="timeline-item hidden" data-year="2024">
+                            <h3 class="font-serif text-2xl text-[#D8A373] mb-3">不當外商菁英的選擇</h3>
+                            <p class="text-gray-700 leading-relaxed">拿到人人稱羨的外商offer，卻選擇了國內生技公司，並因此接觸外泌體。這證明了你<span class="font-bold">忠於自我感受、不被世俗標準綁架的清醒</span>，為你後來的事業選擇提供了完美的敘事鋪墊。</p>
+                        </div>
+                        <div class="timeline-item hidden" data-year="2025">
+                            <h3 class="font-serif text-2xl text-[#D8A373] mb-3">由內而外的整合</h3>
+                            <p class="text-gray-700 leading-relaxed">頂下朋友的店，轉型為「沐美學生活館」，並重啟塔羅服務。這不是一次新的創業，而是你<span class="font-bold">所有人生經歷的總和與昇華</span>——一個能同時安頓內在與外在的療癒空間。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3: Core Strategy -->
+            <section id="strategy" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">我們的策略：一場信任的旅程</h2>
+                    <p class="text-gray-600 max-w-3xl mx-auto">我們不賣東西，我們邀請用戶踏上一段從「共鳴」到「蛻變」的旅程。這就是我們的「故事先行者」策略。</p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6 text-center">
+                    <div class="strategy-flow-item bg-white p-8 rounded-xl">
+                        <div class="text-4xl mb-4">①</div>
+                        <h3 class="text-xl font-serif font-bold text-[#D8A373] mb-2">共鳴 (Resonance)</h3>
+                        <p class="text-sm text-gray-600">透過你充滿轉折的人生故事，吸引有著同樣困惑與渴望的她們，讓她們感覺「被看見、被理解」。</p>
+                    </div>
+                    <div class="strategy-flow-item bg-white p-8 rounded-xl">
+                        <div class="text-4xl mb-4">②</div>
+                        <h3 class="text-xl font-serif font-bold text-[#A1887F] mb-2">信任 (Trust)</h3>
+                        <p class="text-sm text-gray-600">以塔羅作為「自我探索」的橋樑，提供具體價值，建立深度連結，從一個「說故事的人」進化為「可以信賴的引導者」。</p>
+                    </div>
+                    <div class="strategy-flow-item bg-white p-8 rounded-xl">
+                        <div class="text-4xl mb-4">③</div>
+                        <h3 class="text-xl font-serif font-bold text-[#5D544D] mb-2">蛻變 (Transformation)</h3>
+                        <p class="text-sm text-gray-600">將累積的信任，自然地延伸到「由內而外」的美容理念。此時的商業行為，是這趟旅程的最終站——一個幫助她們實現內外合一的具體方案。</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 4: Strategic Mindset -->
+            <section id="mindset" class="scroll-mt-24">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                    <h2 class="text-3xl font-bold font-serif text-[#A1887F] mb-4 text-center">策略心法：我們的流量佈局選擇</h2>
+                    <p class="text-gray-600 mb-12 max-w-3xl mx-auto text-center">關於如何佈局你現有的多個社群平台，我們有兩個核心策略可以選擇。這將決定我們是集中火力，還是多點開花。</p>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-[#F8F5F2] p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-serif text-xl text-[#D8A373] font-bold mb-3">策略一：引力中心模式 (平台集中)</h3>
+                            <p class="text-sm text-gray-700 mb-4">建立一個全新的「主帳號」作為所有故事的首發地。你現有的平台則轉型為「衛星渠道」，負責將各自的垂直流量導回主基地。</p>
+                            <div class="mb-3">
+                                <p class="font-bold text-sm text-green-700">優勢：</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700">
+                                    <li>品牌高度聚焦，快速建立強大IP。</li>
+                                    <li>流量匯聚，粉絲忠誠度高。</li>
+                                    <li>管理高效，品牌聲音統一。</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-red-700">風險：</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700">
+                                    <li>初期需從零積累粉絲，成長較慢。</li>
+                                    <li>過度依賴單一平台的演算法。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="bg-[#F8F5F2] p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-serif text-xl text-[#D8A373] font-bold mb-3">策略二：多點開花模式 (平台分散)</h3>
+                            <p class="text-sm text-gray-700 mb-4">活用你現有的平台，各自經營專屬的垂直內容。例如，塔羅平台專注於占星，美容平台專注於外泌體，並在內容中互相提及。</p>
+                             <div class="mb-3">
+                                <p class="font-bold text-sm text-green-700">優勢：</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700">
+                                    <li>可立即觸及現有粉絲，啟動快速。</li>
+                                    <li>內容垂直深化，滿足不同受眾。</li>
+                                    <li>分散風險，不依賴單一平台。</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-red-700">風險：</p>
+                                <ul class="list-disc list-inside text-sm text-gray-700">
+                                    <li>你的核心個人故事被稀釋，品牌形象模糊。</li>
+                                    <li>流量分散，難以凝聚核心鐵粉。</li>
+                                    <li>內容製作與管理複雜度高。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-6 rounded-r-lg">
+                        <h3 class="font-bold font-serif text-lg">我們的專業建議</h3>
+                        <p class="mt-2 text-sm">我們強烈建議採用<span class="font-bold">「策略一：引力中心模式」</span>。雖然初期成長較慢，但它最符合我們建立一個強大、有故事性、無法被複製的個人IP的核心目標。這是一條更長遠、護城河也更深的路。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5: Annual Roadmap -->
+            <section id="roadmap" class="scroll-mt-24">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                    <h2 class="text-3xl font-bold font-serif text-[#A1887F] mb-4 text-center">行動藍圖：倒述法的敘事魅力</h2>
+                    <p class="text-gray-600 mb-12 max-w-3xl mx-auto text-center">為了讓你的回歸最具衝擊力，我們採用「倒述法」策略。先用你最具張力的蛻變故事抓住所有人的目光，再娓娓道來這一切是如何發生的。</p>
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1">
+                            <div class="relative pl-8">
+                                <div class="absolute left-12 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+                                <div id="roadmap-timeline-container" class="space-y-12">
+                                    <div class="timeline-item relative cursor-pointer active" data-quarter="q1">
+                                        <div class="timeline-dot absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                        <div class="timeline-content ml-4 p-4 border-l-4 border-gray-200 transition-all duration-300">
+                                            <p class="font-bold text-lg text-[#A1887F]">Q1: 引爆：歸來的序章</p>
+                                            <p class="text-sm text-gray-500">對應故事：2023-2024 勇敢試錯 & 忠於自我</p>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item relative cursor-pointer" data-quarter="q2">
+                                        <div class="timeline-dot absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                        <div class="timeline-content ml-4 p-4 border-l-4 border-gray-200 transition-all duration-300">
+                                            <p class="font-bold text-lg text-[#A1887F]">Q2: 敘事：時光的迴響</p>
+                                            <p class="text-sm text-gray-500">對應故事：2015-2022 迷惘與創業</p>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item relative cursor-pointer" data-quarter="q3">
+                                        <div class="timeline-dot absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                        <div class="timeline-content ml-4 p-4 border-l-4 border-gray-200 transition-all duration-300">
+                                            <p class="font-bold text-lg text-[#A1887F]">Q3: 深化：價值落地</p>
+                                            <p class="text-sm text-gray-500">對應故事：美容理念整合</p>
+                                        </div>
+                                    </div>
+                                    <div class="timeline-item relative cursor-pointer" data-quarter="q4">
+                                        <div class="timeline-dot absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 bg-gray-200 rounded-full transition-all duration-300"></div>
+                                        <div class="timeline-content ml-4 p-4 border-l-4 border-gray-200 transition-all duration-300">
+                                            <p class="font-bold text-lg text-[#A1887F]">Q4: 整合：全面變現</p>
+                                            <p class="text-sm text-gray-500">對應故事：沐美學生活館登場</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2 bg-[#F8F5F2] p-6 rounded-xl border border-gray-200">
+                            <h3 class="text-xl font-bold font-serif text-[#A1887F] mb-4">季度策略重點</h3>
+                            <p id="roadmap-details" class="text-gray-700 mb-6">以你最具衝擊力的蛻變故事強勢回歸，快速建立「勇敢、清醒、懂反思」的鮮明IP形象，引爆社群討論。</p>
+                            <div class="chart-container">
+                                <canvas id="roadmapChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 6: Script Analysis -->
+            <section id="scripts" class="scroll-mt-24">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                    <h2 class="text-3xl font-bold font-serif text-[#A1887F] mb-4 text-center">內容與腳本：情感先行的敘事藝術</h2>
+                    <p class="text-gray-600 mb-12 max-w-3xl mx-auto text-center">我們採用「4:3:3」的黃金內容配比，並在第一季以最細膩的手法，演繹你歸來的故事。</p>
+                    <div class="grid md:grid-cols-2 gap-12 items-center">
+                        <div class="chart-container">
+                            <canvas id="contentRatioChart"></canvas>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="font-serif text-xl text-[#A1887F] font-bold">4 則：個人成長故事</h3>
+                                <p class="text-sm text-gray-600 mt-1">品牌的靈魂，負責建立情感共鳴。Q1將聚焦於你2023-2024年的蛻變故事。</p>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-xl text-[#D8A373] font-bold">3 則：占星塔羅探索</h3>
+                                <p class="text-sm text-gray-600 mt-1">品牌的互動核心，負責深化信任。內容以大眾占卜、星象指引等，為粉絲提供心靈支持。</p>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-xl text-[#5D544D] font-bold">3 則：美容美學分享</h3>
+                                <p class="text-sm text-gray-600 mt-1">品牌的價值延伸，負責商業鋪墊。Q1將聚焦「愛自己的物理實踐」，分享你在低潮時的療癒心法。</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="mt-12 pt-8 border-t border-gray-200">
+                        <h3 class="text-2xl font-bold font-serif text-[#A1887F] mb-6 text-center">Q1 英雄腳本剖析</h3>
+                        <div class="space-y-6">
+                             <div class="grid md:grid-cols-3 gap-6 p-6 bg-[#F8F5F2] rounded-lg border border-gray-200">
+                                <div class="md:col-span-1">
+                                    <h3 class="font-serif text-xl text-red-700 font-bold">主題一 (英雄腳本)：我為期365天的婚姻練習</h3>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <p class="font-bold">內容切角：</p>
+                                    <p class="text-sm text-gray-700 mb-3">以溫和而堅定的口吻，分享從閃婚到察覺內耗，最終選擇離開的心路歷程。我們不談論「離婚」，我們只談論「感受」與「選擇」，以及「愛自己，是終身浪漫的開始」的覺醒。</p>
+                                    <p class="font-bold">市場效益與流量評估：</p>
+                                    <p class="text-sm text-gray-700">此為<span class="font-bold">引爆話題的流量引擎</span>，將深度觸動核心TA【探索者艾瑪】，引發大規模情感共鳴，快速建立你在「女性成長」議題上的話語權。</p>
+                                </div>
+                            </div>
+                             <div class="grid md:grid-cols-3 gap-6 p-6 bg-[#F8F5F2] rounded-lg border border-gray-200">
+                                <div class="md:col-span-1">
+                                    <h3 class="font-serif text-xl text-[#D8A373] font-bold">主題二：當全世界都說好，你的心卻說不</h3>
+                                </div>
+                                <div class="md:col-span-2">
+                                    <p class="font-bold">內容切角：</p>
+                                    <p class="text-sm text-gray-700 mb-3">銜接上一個主題，分享你放棄外商offer的選擇。傳達「忠於自我感受，比符合世俗期待更重要」的核心價值。</p>
+                                    <p class="font-bold">市場效益與流量評估：</p>
+                                    <p class="text-sm text-gray-700">鞏固你「人間清醒」的IP人設，吸引在職涯中感到迷惘的粉絲，並為後續你選擇生技產業（外泌體）做出完美的敘事鋪墊。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 7: Beauty Integration -->
+            <section id="integration" class="scroll-mt-24">
+                <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                    <h2 class="text-3xl font-bold font-serif text-[#A1887F] mb-4 text-center">美容業務整合策略</h2>
+                    <p class="text-gray-600 mb-12 max-w-3xl mx-auto text-center">這是我們將信任轉化為價值的關鍵一步。我們不「推銷」，我們只做「分享」，分享你如何在療癒內心後，找到安頓外在的最好方式。</p>
+                    <div class="space-y-6">
+                        <div class="p-6 bg-[#F8F5F2] rounded-lg border border-gray-200">
+                            <h3 class="font-serif text-xl text-[#D8A373] font-bold mb-2">敘事主軸：由內而外的最後一哩路</h3>
+                            <p class="text-sm text-gray-700">我們的核心論述是：真正的美，是內在力量與外在狀態的和諧統一。在你分享完所有關於內心探索與成長的故事後，美容課程與外泌體產品，是你為自己、也為粉絲找到的，讓外在能匹配上內在強大的最終解決方案。</p>
+                        </div>
+                        <div class="p-6 bg-[#F8F5F2] rounded-lg border border-gray-200">
+                            <h3 class="font-serif text-xl text-[#D8A373] font-bold mb-2">分階段整合計畫</h3>
+                            <ul class="list-decimal list-inside text-sm text-gray-700 space-y-2">
+                                <li><span class="font-bold">Q1-Q2 鋪墊期：</span>在分享早期奮鬥與離婚故事的同時，美容內容將聚焦於「愛自己的物理實踐」。例如，分享你在低潮時如何透過高品質的護膚、運動飲食來療癒自己，將「保養」作為一種找回力量的儀式。</li>
+                                <li><span class="font-bold">Q3 教育期：</span>以「科學與療癒的交會」為主題，分享你如何因為職涯選擇而接觸到外泌體的故事。用最淺顯、最貼近你個人經歷的方式，解釋這項技術為何能代表「新生」與「修復」。</li>
+                                <li><span class="font-bold">Q4 轉化期：</span>「沐美學生活館」正式登場。此時推出的所有課程與產品，都將被視為你個人品牌理念的延伸。我們將推出創始會員方案，邀請已建立深厚信任的鐵粉成為第一批體驗者。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 8: Risks & Safeguard -->
+            <section id="risks" class="scroll-mt-24">
+                 <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+                    <h2 class="text-3xl font-bold font-serif text-[#A1887F] mb-4 text-center">風險與守護</h2>
+                    <p class="text-gray-600 mb-12 max-w-3xl mx-auto text-center">一個真實的品牌，需要最溫柔而堅定的守護。</p>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="bg-[#F8F5F2] p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-bold text-lg text-[#A1887F] mb-2">守護品牌：應對負面聲量</h3>
+                            <p class="text-sm text-gray-700">提前制定社群回應準則，建立「溫和而堅定」的溝通口徑，將每一次質疑，都轉化為一次價值觀的深度溝通。</p>
+                        </div>
+                        <div class="bg-[#F8F5F2] p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-bold text-lg text-[#A1887F] mb-2">守護你：管理身心能量</h3>
+                            <p class="text-sm text-gray-700">以「聲音演繹」為主，批量化製作內容，並建立健康的工作界線。你的能量，是品牌最珍貴的資產。</p>
+                        </div>
+                        <div class="bg-[#F8F5F2] p-6 rounded-xl border border-gray-200">
+                            <h3 class="font-bold text-lg text-[#A1887F] mb-2">守護事業：確保法規合規</h3>
+                            <p class="text-sm text-gray-700">在推廣占卜與美容服務時，文案需經專業人士進行法務審核，確保我們的專業與善意，能被清晰、準確地傳達。</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section 9: Next Steps -->
+            <section id="next-steps" class="scroll-mt-24 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">下一步，啟航</h2>
+                <p class="text-gray-600 mb-10 max-w-2xl mx-auto">我們的藍圖已經清晰，現在是時候將它化為現實。</p>
+                <div class="max-w-2xl mx-auto text-left">
+                    <ol class="list-decimal list-inside space-y-4 text-lg text-gray-800">
+                        <li class="p-4 bg-white rounded-lg border border-gray-200">共識確認：我們對本企劃書達成最終共識。</li>
+                        <li class="p-4 bg-white rounded-lg border border-gray-200">視覺定調：根據本案風格，設計品牌視覺形象系統(VIS)。</li>
+                        <li class="p-4 bg-white rounded-lg border border-gray-200">素材盤點：搜集、整理你各時期的故事素材與影像。</li>
+                        <li class="p-4 bg-white rounded-lg border border-gray-200">啟動製作：敲定首次錄音日期，執行首月內容。</li>
+                    </ol>
+                </div>
+                <p class="mt-12 text-xl font-serif text-[#A1887F] italic">故事的種子已經備好，<br>現在，讓我們一起讓它發芽、生長，最終綻放。</p>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile Menu Toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Smooth Scrolling & Active Nav Link
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = link.getAttribute('href');
+                    document.querySelector(targetId).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                    if (window.innerWidth < 1024) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active-nav');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active-nav');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            // Lulu's Story Timeline Interaction
+            const timelineNavItems = document.querySelectorAll('.timeline-nav-item');
+            const timelineContentItems = document.querySelectorAll('#timeline-content-container .timeline-item');
+
+            timelineNavItems.forEach(navItem => {
+                navItem.addEventListener('click', () => {
+                    const targetYear = navItem.dataset.year;
+
+                    timelineNavItems.forEach(item => item.classList.remove('active'));
+                    navItem.classList.add('active');
+
+                    timelineContentItems.forEach(contentItem => {
+                        if (contentItem.dataset.year === targetYear) {
+                            contentItem.classList.remove('hidden');
+                        } else {
+                            contentItem.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+
+            // Roadmap Data & Chart
+            const roadmapData = {
+                q1: {
+                    details: '以你最具衝擊力的蛻變故事強勢回歸，快速建立「勇敢、清醒、懂反思」的鮮明IP形象，引爆社群討論。',
+                    chartData: [70, 25, 5]
+                },
+                q2: {
+                    details: '在觀眾對你充滿好奇時，回溯時間線，講述你早期的奮鬥史，深化品牌的韌性與真實感，鞏固第一批鐵粉。',
+                    chartData: [80, 20, 0]
+                },
+                q3: {
+                    details: '商業模式驗證，塔羅服務常態化。將故事累積的信任轉化為穩定現金流，並開始為美容業務進行深度鋪墊。',
+                    chartData: [40, 40, 20]
+                },
+                q4: {
+                    details: '導入美容商業，完成戰略閉環。全面啟動美容項目行銷，打通故事、占卜、美容三者之間的流量與信任通道。',
+                    chartData: [20, 30, 50]
+                }
+            };
+
+            const roadmapCtx = document.getElementById('roadmapChart').getContext('2d');
+            const roadmapChart = new Chart(roadmapCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['品牌共鳴', '社群信任', '商業轉化'],
+                    datasets: [{
+                        label: '策略重點 (%)',
+                        data: roadmapData.q1.chartData,
+                        backgroundColor: ['#A1887F', '#D8A373', '#FFC107'],
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, max: 100, grid: { display: false }, ticks: { callback: (v) => v + '%' } },
+                        y: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: '季度策略重點分配', font: { family: "'Noto Serif TC', serif", size: 16 } }
+                    }
+                }
+            });
+
+            // Roadmap Timeline Interaction
+            const roadmapTimelineItems = document.querySelectorAll('#roadmap-timeline-container .timeline-item');
+            const roadmapDetails = document.getElementById('roadmap-details');
+            
+            roadmapTimelineItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const quarter = item.dataset.quarter;
+                    const data = roadmapData[quarter];
+
+                    roadmapTimelineItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+
+                    roadmapDetails.textContent = data.details;
+                    
+                    roadmapChart.data.datasets[0].data = data.chartData;
+                    roadmapChart.update();
+                });
+            });
+
+            // Content Ratio Chart
+            const contentRatioCtx = document.getElementById('contentRatioChart').getContext('2d');
+            new Chart(contentRatioCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['個人成長故事 (4則)', '占星塔羅探索 (3則)', '美容美學分享 (3則)'],
+                    datasets: [{
+                        data: [40, 30, 30],
+                        backgroundColor: ['#A1887F', '#D8A373', '#5D544D'],
+                        borderColor: '#F8F5F2',
+                        borderWidth: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        title: { display: true, text: '每月內容主題配比 (4:3:3)', font: { family: "'Noto Serif TC', serif", size: 16 } }
+                    }
+                }
+            });
+             // Trigger click on the first roadmap item to initialize the chart and text
+            if(roadmapTimelineItems.length > 0) {
+                roadmapTimelineItems[0].click();
+            }
+        });
+    </script>
+</body>
+</html>
