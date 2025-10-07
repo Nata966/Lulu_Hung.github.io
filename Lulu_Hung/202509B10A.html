@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>燈塔計畫 | 十月份整合行銷戰略暨九月份成果分析報告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: 溫暖大地 (Warm Earth) -->
+    <!-- Application Structure Plan: 本應用程式採用單頁應用(SPA)架構，以一個固定的頂部導覽列，搭配可滾動的模組化內容區塊。此結構取代了報告的線性閱讀模式，轉而提供一個更直觀、非線性的「儀表板」體驗。使用者可以透過頂部導覽，快速跳轉至他們最關心的戰略環節（例如：數據、內容計畫、整合行銷），從而極大化資訊獲取的效率。我們選擇此結構，是因為一份戰略報告的價值，在於能被反覆查閱與討論，而非一次性的閱讀。此儀表板設計，最符合Lulu與團隊在未來數月中，隨時需要進行戰略校準的實際需求。 -->
+    <!-- Visualization & Content Choices: 
+        - 數據分析 -> 目標:比較 -> 視覺化:Chart.js長條圖 -> 互動:無 -> 理由:將9月份各系列影片的觀看率差異，以最直觀的視覺對比呈現，並搭配卡片式結論，瞬間證明「故事性內容」的絕對優勢，為戰略調整提供無可辯駁的數據支持。
+        - 三帳號定位 -> 目標:組織 -> 視覺化:HTML/CSS卡片式佈局 -> 互動:無 -> 理由:將複雜的三帳號（引流、教育、轉化）協同作戰體系，以清晰、模組化的方式呈現，並在附件中提供極度細膩的視覺化執行指南。
+        - 內容作戰計畫 -> 目標:告知 -> 視覺化:互動式頁籤 -> 互動:切換Tab -> 理由:將塔羅與美容兩大帳號的內容規劃分開呈現，讓使用者可以專注於單一帳號的戰術佈局，並透過互動，清晰地理解每個主題背後的市場效益與策略目的。
+        - 廣告與整合行銷 -> 目標:組織 -> 視覺化:HTML/CSS卡片式佈局與流程圖 -> 互動:無 -> 理由:將複雜的空陸整合戰略，拆解為「廣告策略」、「整合行銷」、「媽祖專案」三個獨立但相關的戰術模塊，降低認知負擔，提升資訊的可讀性。
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #FDFBF8; color: #5D544D; }
+        h1, h2, h3, h4, h5, .font-serif { font-family: 'Noto Serif TC', serif; }
+        .active-nav { color: #D8A373 !important; font-weight: 700; border-bottom-color: #D8A373; }
+        .chart-container { position: relative; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        @media (max-width: 768px) { .chart-container { height: 450px; } }
+        .tab-btn { transition: all 0.3s ease; }
+        .tab-btn.active { color: #D8A373; border-bottom-color: #D8A373; font-weight: 600; }
+        .content-card { transition: all 0.3s ease; }
+        .content-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .prose { max-width: 80ch; }
+        .kpi-card::before { content: '●'; position: absolute; left: 1.5rem; top: 1.7rem; font-size: 0.8rem; }
+    </style>
+</head>
+<body class="antialiased">
+    <header class="bg-white/80 backdrop-blur-sm text-[#5D544D] py-3 px-6 sticky top-0 z-50 border-b border-gray-200/80">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-lg md:text-xl font-bold font-serif">燈塔計畫 | 戰略報告</h1>
+            <nav class="hidden lg:flex items-center space-x-4 text-xs">
+                <a href="#intro" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">前言</a>
+                <a href="#reality" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">現實與挑戰</a>
+                <a href="#data" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">數據洞察</a>
+                <a href="#strategy" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">三帳號戰略</a>
+                <a href="#plan" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">十月作戰計畫</a>
+                <a href="#ads" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">廣告策略</a>
+                <a href="#integration" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">整合行銷</a>
+                <a href="#emergency" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">緊急應對</a>
+                <a href="#conclusion" class="nav-link py-2 border-b-2 border-transparent transition-colors duration-300 hover:text-[#D8A373] hover:border-[#D8A373]">結論</a>
+            </nav>
+            <button id="mobile-menu-button" class="lg:hidden p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden lg:hidden mt-4 bg-white/90 rounded-lg shadow-lg p-2">
+            <a href="#intro" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">前言</a>
+            <a href="#reality" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">現實與挑戰</a>
+            <a href="#data" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">數據洞察</a>
+            <a href="#strategy" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">三帳號戰略</a>
+            <a href="#plan" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">十月作戰計畫</a>
+            <a href="#ads" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">廣告策略</a>
+            <a href="#integration" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">整合行銷</a>
+            <a href="#emergency" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">緊急應對</a>
+            <a href="#conclusion" class="nav-link block text-center py-2 text-[#5D544D] hover:bg-gray-100 rounded">結論</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-8 md:p-12">
+        <div class="space-y-20 md:space-y-24">
+            
+            <section id="intro" class="scroll-mt-24">
+                <div class="text-center">
+                    <p class="text-sm font-semibold text-[#D8A373] tracking-widest mb-2">PROJECT LIGHTHOUSE</p>
+                    <h2 class="text-3xl md:text-5xl font-bold font-serif text-[#A1887F] mb-4">《燈塔計畫》10月份整合行銷戰略報告<br>暨9月份流量成果分析報告</h2>
+                </div>
+                <div class="mt-12 bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <h3 class="text-2xl font-serif font-bold text-center text-[#5D544D] mb-6">1.0 前言與核心使命</h3>
+                    <div class="grid md:grid-cols-2 gap-8 items-start">
+                        <div class="prose text-gray-700">
+                           <h4 class="font-serif">1.1 專案代號</h4>
+                           <p>正式確立為「燈塔計畫」(Project Lighthouse)。</p>
+                           <h4 class="font-serif">1.2 核心使命：建構一套可衡量、可擴展的整合行銷作戰體系</h4>
+                           <p>本專案的核心使命，是為Lulu的個人IP及「byeTHEway」產品，建立一套可持續成長的商業模式。這份報告，將是我們實現目標的作戰藍圖。</p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="relative pl-10 kpi-card text-green-800 before:text-green-500">
+                                <h4 class="font-bold font-serif">實現合理的流量破圈</h4>
+                                <p class="text-sm text-green-700">透過高質感的內容策略，在目標受眾中建立深度共鳴，達成健康、有機的社群擴散與粉絲增長。</p>
+                            </div>
+                            <div class="relative pl-10 kpi-card text-blue-800 before:text-blue-500">
+                                <h4 class="font-bold font-serif">完成空陸戰的無縫整合</h4>
+                                <p class="text-sm text-blue-700">將線上創造的情感連結與品牌信任（空戰），有效地引導至線下（陸戰）的深度體驗與商業轉化。</p>
+                            </div>
+                            <div class="relative pl-10 kpi-card text-purple-800 before:text-purple-500">
+                                <h4 class="font-bold font-serif">建立理性的KPI追蹤模型</h4>
+                                <p class="text-sm text-purple-700">將所有行銷活動納入清晰、可邏輯化分析的數據模型中，確保我們的每一分投入，都有可依循的數據支持。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="reality" class="scroll-mt-24">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <h2 class="text-2xl md:text-3xl font-bold font-serif text-[#A1887F] mb-8 text-center">2.0 直面現實：我們的起點與挑戰</h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 class="font-serif font-bold text-lg text-gray-800">2.1 品牌聲量的困境</h4>
+                            <p class="prose prose-sm text-gray-600 mt-2">我們必須誠實地面對一個核心挑戰：Lulu背後的產品廠商「byeTHEway」，無論是在網路空戰或實體陸戰上，其品牌曝光度與市場知名度均處於起步階段。這意味著，我們的「燈塔計畫」，無法依賴任何現有的品牌資產，必須從零開始，建立每一寸的信任。</p>
+                            <h4 class="font-serif font-bold text-lg text-gray-800 mt-6">2.3 我們的破局點</h4>
+                             <div class="mt-2 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-800 p-4 rounded-r-lg">
+                                <p class="font-semibold">正因為傳統路徑的失效，才凸顯了我們選擇的道路——以一個真實、有故事性、能引發深度共鳴的個人IP，去建立無法被金錢購買的「信任」——是唯一，也是最強的解方。</p>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-lg text-gray-800">2.2 網路生態的殘酷</h4>
+                            <div class="mt-2 space-y-3">
+                                <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                    <h5 class="font-bold text-red-700">破圈 ≠ 變現</h5>
+                                    <p class="text-xs text-red-600">單純的影片觀看數，無法直接等同於銷售額。</p>
+                                </div>
+                                <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                    <h5 class="font-bold text-red-700">廣告 ≠ 萬靈丹</h5>
+                                    <p class="text-xs text-red-600">在品牌信任度為零時，廣告投放只是昂貴的煙火，短暫且無效。</p>
+                                </div>
+                                 <div class="bg-red-50 p-3 rounded-lg border border-red-100">
+                                    <h5 class="font-bold text-red-700">內容 ≠ 越多越好</h5>
+                                    <p class="text-xs text-red-600">演算法的數字遊戲，不是我們的戰場。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="data" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">3.0 【關鍵】九月份數據成效分析：市場的真實回饋</h2>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                    <p class="text-center text-xs text-gray-400 mt-2">3.2 九月份第一週 Reels 數據總覽</p>
+                    <div class="mt-8 grid md:grid-cols-3 gap-6 text-center">
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h3 class="font-bold font-serif text-green-800">策略驗證成功</h3>
+                            <p class="text-sm text-green-700 mt-2">「我的故事」與「塔羅奇案」系列的強勁表現，證明了只要內容涉及深刻的情感掙扎與人性剖析，就能獲得市場最高共鳴。</p>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h3 class="font-bold font-serif text-blue-800">冠軍主題浮現</h3>
+                            <p class="text-sm text-blue-700 mt-2">EP2《...扮演家人》與EP6《...窒息的塔》的雙雙勝出，證明「關係中的自我覺醒」是現階段最強的流量密碼。</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h3 class="font-bold font-serif text-red-800">商業轉化時機未到</h3>
+                            <p class="text-sm text-red-700 mt-2">「美容美學」系列的數據表現，明確警告我們：在還沒愛上妳這個「人」之前，觀眾對妳的「專業」是完全免疫的。</p>
+                        </div>
+                    </div>
+                     <p class="text-center text-xs text-gray-400 mt-6">3.1 結論先行</p>
+                </div>
+            </section>
+            
+            <section id="strategy" class="scroll-mt-24">
+                 <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">4.0 三帳號市場定位與社群賦能</h2>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <div class="prose max-w-none mb-8">
+                        <h4>4.1 核心戰略：三位一體的信任漏斗 (The Trinity Trust Funnel)</h4>
+                        <p>為了最大化Lulu個人IP的影響力，並為後續的商業轉化，建立最穩固的信任基礎，我們將啟動三個定位清晰、功能互補的IG社群帳號。它們將構成一個完整的三層信任漏斗，分別負責「引流」、「教育」與「轉化」。</p>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="content-card bg-gray-50 p-6 rounded-xl border">
+                            <h5 class="font-bold text-sm text-[#A1887F]">4.2 【引流層】Lulu的靈魂相談室</h5>
+                            <p class="text-xs mt-1 text-[#D8A373] font-semibold">賦能定位：妳的人生練習題</p>
+                            <p class="text-sm text-gray-600 mt-4">賦予粉絲「自我覺察」與「情緒梳理」的能力。透過「塔羅奇案」系列，大規模捕獲對「關係」、「職場」等議題有興趣的陌生自然流量。</p>
+                        </div>
+                        <div class="content-card bg-gray-50 p-6 rounded-xl border">
+                            <h5 class="font-bold text-sm text-[#A1887F]">4.3 【教育層】沐美學</h5>
+                            <p class="text-xs mt-1 text-[#D8A373] font-semibold">賦能定位：網路美容保養小教室</p>
+                            <p class="text-sm text-gray-600 mt-4">成為粉絲最信賴的「肌膚問題顧問」。透過「溫柔的手術刀」策略，以實戰教學解決粉絲的外在問題，建立專業權威。</p>
+                        </div>
+                        <div class="content-card bg-gray-50 p-6 rounded-xl border">
+                            <h5 class="font-bold text-sm text-[#A1887F]">4.4 【轉化層】byeTHEway</h5>
+                            <p class="text-xs mt-1 text-[#D8A373] font-semibold">賦能定位：妳的安心選物指南</p>
+                            <p class="text-sm text-gray-600 mt-4">一個安靜、專業的「品牌圖書館」，專為高意向客戶而存在。不主動打擾，只負責在需要時，給予最清晰、最安心的答案。</p>
+                        </div>
+                    </div>
+                    <div class="mt-12 bg-gray-50 p-8 rounded-2xl border border-gray-200/80">
+                        <h4 class="font-serif font-bold text-xl text-center text-[#5D544D] mb-8">4.5 附件-byeTHEway 帳號圖文行銷 - 具體執行建議指南</h4>
+                        <div class="grid lg:grid-cols-5 gap-8">
+                            <div class="lg:col-span-2 prose prose-sm text-gray-700">
+                                <h5 class="font-serif font-bold mt-0 text-lg">1.0 我們的精神標竿：</h5>
+                                <h3 class="font-serif text-3xl text-[#A1887F] mt-2">Aesop (伊索)</h3>
+                                <p>在圖文行銷領域，將產品昇華為藝術品的最佳案例，無疑是Aesop。我們的目標是成為保養品界的「Aesop」，不只是一個品牌，而是一種品味與堅持的象-徵。</p>
+                                <ul class="list-disc pl-5 mt-4 space-y-2">
+                                    <li><strong>極致的美學一致性</strong><br><span class="text-xs text-gray-500">每一張圖片，都像一幅精心構圖的靜物畫。</span></li>
+                                    <li><strong>內容的深度與廣度</strong><br><span class="text-xs text-gray-500">不只談產品，更談文學、藝術與哲學。</span></li>
+                                    <li><strong>文字的詩意與精準</strong><br><span class="text-xs text-gray-500">不誇大功效，只描繪感受與心靈體驗。</span></li>
+                                </ul>
+                            </div>
+                            <div class="lg:col-span-3 space-y-6 bg-white p-6 rounded-lg">
+                                <h5 class="font-serif font-bold text-lg text-gray-800">2.0 【具體執行細節】三大內容支柱</h5>
+                                <div>
+                                    <h5 class="font-serif font-bold text-base text-gray-800">2.1 【核心內容】產品的身分證 (Carousel)</h5>
+                                    <p class="text-xs text-gray-500 mt-1">以6張圖文輪播的形式，將每一款產品打造成一篇讓人忍不住收藏的藝術品。依序闡述「情緒提問」、「Lulu的初心」、「成分的詩意」、「Lulu的儀式感」，最後才溫柔地邀請了解。</p>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <h5 class="font-serif font-bold text-base text-gray-800">2.2 【信任基石】溫柔的見證 (Post/Reel)</h5>
+                                        <p class="text-xs text-gray-500 mt-1">使用極簡的「引言卡」或「文字動畫Reel」，呈現真實使用者的匿名引言，創造安靜而強大的信任感。</p>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-serif font-bold text-base text-gray-800">2.3 【品牌靈魂】品牌的初心 (Highlights)</h5>
+                                        <p class="text-xs text-gray-500 mt-1">建立「關於我們」、「Lulu的堅持」、「媽祖的祝福」、「成分辭典」等固定精選分類，成為品牌的「精神檔案館」。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="plan" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">8.0 十月份內容作戰計畫</h2>
+                    <p class="text-gray-600 max-w-3xl mx-auto">十月份的內容，將是「塔羅奇案」與「溫柔的手術刀」兩大系列的首度正面對決，旨在驗證市場反應，並為後續的資源投入，提供最精準的數據依據。</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <div class="mb-6 border-b border-gray-200">
+                        <nav class="flex -mb-px" aria-label="Tabs">
+                            <button class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm active" data-tab="tarot">
+                                8.1 Lulu的靈魂相談室 (5支影片)
+                            </button>
+                            <button class="tab-btn w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm" data-tab="beauty">
+                                8.2 沐美學 (5支影片)
+                            </button>
+                        </nav>
+                    </div>
+                    <div id="tarot-content" class="tab-content">
+                        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Tarot content cards will be injected here by JS -->
+                        </div>
+                    </div>
+                    <div id="beauty-content" class="tab-content hidden">
+                         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <!-- Beauty content cards will be injected here by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="ads" class="scroll-mt-24">
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <h2 class="text-2xl md:text-3xl font-bold font-serif text-[#A1887F] mb-6 text-center">5.0 廣告投放策略：我們為什麼不做「推銷式廣告」？</h2>
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="prose text-gray-700">
+                            <h4 class="font-serif">5.1 為什麼直接投放廣告不適合？</h4>
+                            <p>直接對一個不認識妳的「冷」觀眾投放產品廣告，就像在冰冷的土壤上撒種子，不僅昂貴，且幾乎不會發芽。在品牌信任度為零的情況下，這種「推銷式廣告」只會快速燒光預算，並傷害我們好不容易建立的「真實感」。</p>
+                        </div>
+                        <div class="bg-red-50 p-6 rounded-lg border border-red-200">
+                            <h4 class="font-bold text-red-800 font-serif">推銷式廣告 (我們不做的)</h4>
+                            <ul class="list-disc pl-5 text-sm text-red-700 mt-2 space-y-1">
+                                <li><strong>目標：</strong>直接銷售產品</li>
+                                <li><strong>對象：</strong>無差別的「冷」觀眾</li>
+                                <li><strong>內容：</strong>產品功能、折扣優惠</li>
+                                <li><strong>結果：</strong>轉換率極低，傷害品牌信任</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr class="my-8 border-gray-200/80">
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                         <div class="prose text-gray-700">
+                            <h4 class="font-serif">5.2 我們的策略：「擴散式廣告」的信任加速器</h4>
+                            <p>我們對待廣告的態度是：廣告，不是我們創造奇蹟的魔法，而是我們放大「真實」的工具。 我們只做「擴散式廣告」，它的唯一目的，是將我們最優質的「內容」（例如：爆款的塔羅奇案影片），擴散給更多「對的人」看見。</p>
+                        </div>
+                        <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                             <h4 class="font-bold text-green-800 font-serif">擴散式廣告 (我們的選擇)</h4>
+                            <ul class="list-disc pl-5 text-sm text-green-700 mt-2 space-y-1">
+                                <li><strong>目標：</strong>擴散優質內容，建立信任</li>
+                                <li><strong>對象：</strong>與粉絲相似的「潛在共鳴者」</li>
+                                <li><strong>內容：</strong>高共鳴的品牌故事或塔羅奇案</li>
+                                <li><strong>結果：</strong>高效擴大信任圈，為轉化溫暖土壤</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="integration" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">6.0 整合行銷策略：空陸整合戰</h2>
+                </div>
+                 <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                    <div class="prose max-w-none text-gray-700 mb-8 text-center">
+                        <h4 class="font-serif">6.1 核心挑戰：從「線上流量」到「線下變現」的信任鴻溝</h4>
+                        <p>我們必須清醒地認知到，「線上流量」與「線下變現」之間，存在著一道巨大的信任鴻溝。尤其是對於像「byeTHEway」這樣，涉及私密處保養等高信任度需求的產品，消費者不可能僅憑一支短影音就做出購買決策。</p>
+                        <h4 class="font-serif">6.2 核心解方：用空戰引流，用陸戰轉化</h4>
+                        <p>我們的核心戰略，是將線上與線下，視為一個完整的作戰體系。空戰的唯一任務是「引流與建立期待」，陸戰的唯一任務是「轉化與創造口碑」。</p>
+                    </div>
+                    <div class="relative pt-12">
+                         <div class="absolute top-0 left-1/2 -translate-x-1/2 -mt-4 flex items-center">
+                            <span class="text-xs text-gray-400 uppercase tracking-widest">6.3 【具體執行細節】新陸戰三部曲</span>
+                        </div>
+                        <div class="grid md:grid-cols-3 gap-8 text-center relative">
+                            <div class="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 hidden md:block"></div>
+                            <div class="relative bg-[#FDFBF8] p-6">
+                                <div class="absolute top-1/2 -translate-y-1/2 left-0 -ml-4 w-8 h-8 rounded-full bg-[#A1887F] text-white flex items-center justify-center font-bold">1</div>
+                                <h5 class="font-bold font-serif text-[#A1887F]">信任轉化基地</h5>
+                                <p class="text-sm text-gray-600 mt-2">將Lulu的工作室，升級為「品牌體驗館」，將塔羅個案無縫轉化為第一批最忠實的產品體驗者。</p>
+                            </div>
+                             <div class="relative bg-[#FDFBF8] p-6">
+                                <div class="absolute top-1/2 -translate-y-1/2 left-0 -ml-4 w-8 h-8 rounded-full bg-[#A1887F] text-white flex items-center justify-center font-bold">2</div>
+                                <h5 class="font-bold font-serif text-[#A1887F]">零成本盟軍</h5>
+                                <p class="text-sm text-gray-600 mt-2">與瑜珈教室、獨立書店等「好感通路」進行異業結盟，透過「產品進駐」與「體驗券合作」精準觸及目標客群。</p>
+                            </div>
+                             <div class="relative bg-[#FDFBF8] p-6">
+                                <div class="absolute top-1/2 -translate-y-1/2 left-0 -ml-4 w-8 h-8 rounded-full bg-[#A1887F] text-white flex items-center justify-center font-bold">3</div>
+                                <h5 class="font-bold font-serif text-[#A1887F]">口碑武器</h5>
+                                <p class="text-sm text-gray-600 mt-2">鼓勵「素人」用戶的真實反饋，透過創造「分享的衝動」與建立「真實的反饋」循環，讓口碑成為品牌成長的核心引擎。</p>
+                            </div>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="emergency" class="scroll-mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-4">7.0 緊急應對專案：白沙屯媽祖聯名</h2>
+                </div>
+                 <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-gray-200/80">
+                     <div class="grid md:grid-cols-2 gap-8 items-start">
+                        <div class="prose text-gray-700">
+                           <h4 class="font-serif">7.1 核心挑戰：從「行銷滯後」的困境，到「戰略破局」的轉機</h4>
+                           <p>我們必須誠實地面對一個核心挑戰：「白沙屯媽祖聯名沐浴露」的產品開發，並未與前期的行銷規劃進行同步，導致我們目前處於一個「產品已出，但市場認知為零」的被動局面。</p>
+                           <h4 class="font-serif">7.2 戰略目標再定義：我們不賣沐浴乳，我們提供「精神象徵物」</h4>
+                           <p>我們的戰略目標必須調整為：將「白沙屯媽祖聯名沐浴露」的身份，從一件「高價的日用商品」，徹底轉化為一個承載著高文化價值與信念的「精神象徵物」，迂迴處理市場曝光度不足的問題。</p>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-lg border border-gray-200/80">
+                            <h4 class="font-serif font-bold text-lg text-center mb-4">7.3 【具體執行細節】緊急應對方案：「善緣先行」的整合打擊</h4>
+                            <ol class="list-decimal pl-5 space-y-4 text-sm">
+                                <li><strong>第一步 (已完成)：空戰定調——確立敘事制高點。</strong><br><span class="text-gray-600">完成了《白沙屯媽祖聯名篇》影片的定稿，搶在商業行為前，先向市場傳達我們的「敬意」與「初心」。</span></li>
+                                <li><strong>第二步 (建議執行)：陸戰結緣——將「善緣」轉化為「體驗」。</strong><br><span class="text-gray-600">透過「還願於廟」（捐贈給拱天宮）與佈局進香路徑上的「溫柔補給站」（免費提供給香燈腳），將產品精準地送到信徒手中。</span></li>
+                                <li><strong>第三步 (成果驗收)：實體的信任感建立與知名度的初步打開。</strong><br><span class="text-gray-600">透過以上陸戰行動，我們將在最核心的信徒社群中，建立起一個充滿善意的初步形象。這份透過「給予」所建立起來的實體信任感，將成為後續所有線上行銷，最穩固的基石。</span></li>
+                            </ol>
+                        </div>
+                    </div>
+                 </div>
+            </section>
+
+            <section id="conclusion" class="scroll-mt-24 text-center">
+                <h2 class="text-3xl md:text-4xl font-bold font-serif text-[#A1887F] mb-6">9.0 結論與下一步</h2>
+                 <div class="prose prose-lg max-w-3xl mx-auto text-left bg-white p-8 rounded-xl shadow-lg border border-gray-200/80">
+                    <h4 class="mt-0 font-serif">9.1 總結</h4>
+                    <p>本企劃是一套完整、務實，且能根據市場數據，快速進行自我修正與進化的整合行銷作戰藍圖。</p>
+                    <h4 class="font-serif">9.2 下一步</h4>
+                    <ol class="list-decimal pl-5">
+                        <li>確認本報告內容，達成最終共識。</li>
+                        <li>立即啟動「白沙屯媽祖聯名」緊急應對方案。</li>
+                        <li>根據本報告規劃，排定十月份的拍攝與製作時程。</li>
+                    </ol>
+                </div>
+            </section>
+
+        </div>
+    </main>
+    <footer class="mt-24 border-t border-gray-200/80 py-8 text-center text-xs text-gray-400">
+        <p>《燈塔計畫》整合行銷戰略報告 | © 2025 All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const performanceData = {
+                labels: [
+                    'EP1: 消失...', 'EP2: ...家人', 'EP3: ...拒絕錢',
+                    'EP6: ...窒息的塔', 'EP5: ...選不出來', 'EP7: ...沒有光',
+                    'EP10: 海菲秀', 'EP8: 外泌體理念', 'EP9: 外泌體知識'
+                ],
+                datasets: [{
+                    label: '觀看率',
+                    data: [197, 327, 91, 255, 176, 214, 40, 60, 28],
+                    backgroundColor: [
+                        '#A1887F', '#A1887F', '#A1887F',
+                        '#D8A373', '#D8A373', '#D8A373',
+                        '#BDBDBD', '#BDBDBD', '#BDBDBD'
+                    ],
+                    borderColor: '#FDFBF8',
+                    borderWidth: 2,
+                    borderRadius: 5,
+                }]
+            };
+
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'bar',
+                data: performanceData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: { beginAtZero: true, grid: { color: '#F0EBE5' } },
+                        y: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: '3.2 九月份第一週 Reels 數據總覽', font: { family: "'Noto Serif TC', serif", size: 18, weight: 'bold' }, color: '#5D544D', padding: { top: 10, bottom: 20 } },
+                        tooltip: {
+                            callbacks: {
+                                title: function(context) {
+                                    const fullTitle = context[0].label;
+                                    const seriesMap = { 'EP1': '我的故事', 'EP2': '我的故事', 'EP3': '我的故事', 'EP6': '塔羅奇案', 'EP5': '塔羅奇案', 'EP7': '塔羅奇案', 'EP10': '美容美學', 'EP8': '美容美學', 'EP9': '美容美學'};
+                                    const series = seriesMap[fullTitle.split(':')[0]] || '未知系列';
+                                    return `${series} | ${fullTitle}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const contentPlan = {
+                tarot: [
+                    { title: 'EP1：《妳最好的朋友，可能已經是妳最大的內耗》', hook: '直面「有毒友誼」這個最常見，卻最少人敢談論的痛苦。', potential: '高共鳴、高討論度' },
+                    { title: 'EP2：《為什麼妳連「休息」，都帶著罪惡感？》', hook: '命中力求上進的「好女孩」心中，渴望休息卻又害怕被拋棄的矛盾。', potential: '高收藏、高實用價值' },
+                    { title: 'EP3：《妳不是不值得，妳只是不敢要》', hook: '戳破女性在職場與關係中，總是在等待別人「給」，卻不敢主動為自己「要」的自我貶抑心態。', potential: '極高的賦能力量' },
+                    { title: 'EP4：《模仿犯》', hook: '「討好型人格」的悲劇。', potential: '高互動，極易在女性社群中引發「我也是」的病毒式傳播。' },
+                    { title: 'EP5：《善良的囚犯》', hook: '「孝順」的枷鎖。', potential: '極高情感黏著度，能觸及最普遍的華人家庭課題。' }
+                ],
+                beauty: [
+                    { title: 'EP1：《為什麼天氣冷了，妳的臉就跟著裂開？》', hook: '「乾裂」、「乾癢」的冬日痛點。', potential: '高季節性搜尋流量。為媽祖聯名沐浴乳進行價值背書。' },
+                    { title: 'EP2：《妳的高價洗髮精，到底是在貴什麼？》', hook: '戳破品牌溢價的迷思，引發對「錢花在哪裡」的好奇。', potential: '高信任建立。為「byeTHEway」建立「誠實、有效」的品牌形象。' },
+                    { title: 'EP3：《流汗脫妝的瞬間，妳是不是想把整張臉砍掉重練？》', hook: '「土石流」的崩潰瞬間。', potential: '極高實用性與分享價值。為「Oliah®奧莉雅控油潔顏露」鋪墊聲量。' },
+                    { title: 'EP4：《妳的「壓力肩」，正在出賣妳的年齡》', hook: '將「肩頸痠痛」與「臉部顯老」進行強連結。', potential: '開創新藍海。提升「撥筋」服務的價值感與獨特性。' },
+                    { title: 'EP5：《那個最讓妳不安的味道，我們今天，好好聊聊》', hook: '用溫柔、科學的語氣，觸碰最私密的話題。', potential: '絕對的鐵粉製造機。為「byeTHEway私密處保養產品」建立無條件信任。' }
+                ]
+            };
+            
+            function createContentCard(item) {
+                return `
+                    <div class="content-card bg-gray-50 p-4 rounded-lg border border-gray-200/80 h-full flex flex-col">
+                        <h4 class="font-bold font-serif text-[#A1887F] text-base">${item.title}</h4>
+                        <p class="text-xs text-gray-500 mt-2 flex-grow"><span class="font-bold">情緒鉤子：</span>${item.hook}</p>
+                        <p class="text-xs text-[#D8A373] mt-3 font-semibold">${item.potential}</p>
+                    </div>
+                `;
+            }
+
+            const tarotContainer = document.querySelector('#tarot-content .grid');
+            const beautyContainer = document.querySelector('#beauty-content .grid');
+            
+            contentPlan.tarot.forEach(item => tarotContainer.innerHTML += createContentCard(item));
+            contentPlan.beauty.forEach(item => beautyContainer.innerHTML += createContentCard(item));
+
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+                    
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    tabContents.forEach(content => {
+                        if (content.id === `${tabId}-content`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (window.innerWidth < 1024) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        document.querySelectorAll('.nav-link').forEach(link => {
+                            link.classList.remove('active-nav');
+                            if (link.getAttribute('href') === `#${id}`) {
+                                link.classList.add('active-nav');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: "-40% 0px -60% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+</body>
+</html>
+
